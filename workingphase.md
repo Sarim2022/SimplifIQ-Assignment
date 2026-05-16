@@ -389,7 +389,7 @@ No additional packages required for the **core** workflow.
 2. Fix `.env` if needed: `GOOGLE_APPLICATION_CREDENTIALS=./credentials/linkforge-203da-00bc5e8bab50.json`
 3. Share Sheet + Drive folder with service account email (see health endpoint)
 4. Submit form → verify new Sheet row + PDF in Drive folder
-5. Submit assessment with `README.md` + demo video/screenshots
+5. Submit assessment with `README.md` (includes Submission notes + cover email template) + demo/screenshots
 
 ---
 
