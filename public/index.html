@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SimplifIQ — Business Audit Request</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <div class="logo" aria-hidden="true">S</div>
+      <div>
+        <p class="brand">SimplifIQ</p>
+        <p class="tagline">Automated business audit &amp; insights</p>
+      </div>
+    </header>
+
+    <main class="card">
+      <section class="intro">
+        <h1>Request your personalized audit</h1>
+        <p>
+          Share your company details and we&rsquo;ll research your business, generate a tailored report,
+          and email it to you automatically.
+        </p>
+      </section>
+
+      <form id="lead-form" class="form" novalidate>
+        <div class="field">
+          <label for="name">Full name</label>
+          <input type="text" id="name" name="name" autocomplete="name" placeholder="Jane Doe" required />
+          <span class="field-error" id="error-name" role="alert"></span>
+        </div>
+
+        <div class="field">
+          <label for="email">Work email</label>
+          <input type="email" id="email" name="email" autocomplete="email" placeholder="jane@company.com" required />
+          <span class="field-error" id="error-email" role="alert"></span>
+        </div>
+
+        <div class="field">
+          <label for="companyName">Company name</label>
+          <input type="text" id="companyName" name="companyName" autocomplete="organization" placeholder="Acme Inc" required />
+          <span class="field-error" id="error-companyName" role="alert"></span>
+        </div>
+
+        <div class="field">
+          <label for="companyWebsite">Company website</label>
+          <input type="text" id="companyWebsite" name="companyWebsite" autocomplete="url" inputmode="url" placeholder="https://acme.com" required />
+          <span class="field-hint">Include https:// or enter domain only (e.g. acme.com)</span>
+          <span class="field-error" id="error-companyWebsite" role="alert"></span>
+        </div>
+
+        <button type="submit" id="submit-btn" class="btn btn-primary">
+          <span class="btn-label">Generate my audit</span>
+          <span class="btn-spinner" aria-hidden="true"></span>
+        </button>
+      </form>
+
+      <div id="status-panel" class="status-panel hidden" role="status" aria-live="polite">
+        <div id="status-icon" class="status-icon" aria-hidden="true"></div>
+        <div>
+          <p id="status-title" class="status-title"></p>
+          <p id="status-message" class="status-message"></p>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <p>Powered by SimplifIQ &middot; Assessment prototype</p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+{
+  "name": "simplifiq-assessment",
+  "version": "1.0.0",
+  "description": "SimplifIQ lead automation — scrape, AI audit, PDF, email",
+  "main": "aiReport.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "axios": "^1.16.1",
+    "cheerio": "^1.2.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "nodemailer": "^8.0.7",
+    "pdfkit": "^0.18.0"
+  }
+}
