@@ -1,7 +1,7 @@
 # SimplifIQ Assessment — Working Phase Tracker
 
-> **Last updated:** Phase 7 & 8 — E2E integration + documentation complete  
-> **Status:** Production-ready assessment prototype; optional Phase 9 bonus (Sheets/Drive)
+> **Last updated:** Phase 9 — Google Sheets & Drive bonus complete  
+> **Status:** Full assessment + bonus (scrape → AI → PDF → email → Sheets → Drive)
 
 ---
 
@@ -202,16 +202,21 @@
 
 ---
 
-### Phase 9 — BONUS (Optional) ⏳ PENDING
+### Phase 9 — BONUS (Optional) ✅ COMPLETE
 
 | Task | Status |
 |------|--------|
-| Google Sheets: append lead row (name, email, company, timestamp, status) | ⏳ Pending |
-| Google Drive: upload PDF copy to folder | ⏳ Pending |
-| Service account or OAuth setup documented | ⏳ Pending |
+| Google Sheets: append lead row (name, email, company, timestamp, status) | ✅ Done |
+| Google Drive: upload PDF copy to folder | ✅ Done |
+| Service account or OAuth setup documented | ✅ Done (README + `.env.example`) |
 
-**New files (suggested):** `sheetsLogger.js`, `driveArchiver.js`  
-**Extra dependency:** `googleapis`
+**Files:** `googleAuth.js`, `sheetsLogger.js`, `driveArchiver.js`, `pipeline.js`
+
+**Dependency:** `googleapis` (installed)
+
+**Service account email:** share Sheet + Drive folder with `client_email` from credentials JSON
+
+**Sheet columns (A–G):** Name, Email, Company, Website, Timestamp, Report Status, Request ID
 
 ---
 
@@ -225,6 +230,9 @@
 | `aiReport.js` | ✅ Gemini audit + fallback report |
 | `pdfGenerator.js` | ✅ PDFKit multi-section reports → `/reports` |
 | `emailSender.js` | ✅ Nodemailer + HTML template + PDF attach |
+| `googleAuth.js` | ✅ Service account auth (Sheets + Drive) |
+| `sheetsLogger.js` | ✅ Append leads to Google Sheet |
+| `driveArchiver.js` | ✅ Upload PDF to Google Drive |
 | `public/index.html` | ✅ Lead capture form |
 | `public/style.css` | ✅ Modern dark UI |
 | `public/script.js` | ✅ Validation, fetch, loading/success/error |
@@ -298,7 +306,7 @@ No additional packages required for the **core** workflow.
 | — | — | Core assessment workflow complete |
 | `GEMINI_API_KEY` placeholder | AI step will fail | Add real API key |
 | Email credentials unverified | Email step may fail | Test SMTP; use app password |
-| Bonus Sheets/Drive | Optional tracker/archive | Phase 9 if desired |
+| — | — | All phases complete |
 | Bonus Google APIs not wired | Bonus features unavailable | Phase 9 + `googleapis` |
 
 ---
@@ -371,16 +379,17 @@ No additional packages required for the **core** workflow.
 | 6 | ✅ | `emailSender.js` + email wired into `/api/leads` |
 | 7 | ✅ | `pipeline.js` E2E + workflow status codes |
 | 8 | ✅ | README, `.env.example`, UI polish |
-| 9 | — | |
+| 9 | ✅ | Sheets logger + Drive archiver |
 
 ---
 
 ## Next Action (for you)
 
-1. Restart server — health must show `pipelineVersion: phase7-complete-v1`
-2. Run full E2E test: form → inbox PDF → file in `reports/`
-3. Review `README.md` before submission
-4. Optional: say **"Start Phase 9"** for Google Sheets + Drive bonus
+1. Restart server — health shows `pipelineVersion: phase9-bonus-v1` and `google.configured: true`
+2. Fix `.env` if needed: `GOOGLE_APPLICATION_CREDENTIALS=./credentials/linkforge-203da-00bc5e8bab50.json`
+3. Share Sheet + Drive folder with service account email (see health endpoint)
+4. Submit form → verify new Sheet row + PDF in Drive folder
+5. Submit assessment with `README.md` + demo video/screenshots
 
 ---
 

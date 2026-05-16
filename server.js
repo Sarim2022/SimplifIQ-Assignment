@@ -7,6 +7,7 @@ const fs = require('fs');
 const { runLeadPipeline, PIPELINE_VERSION } = require('./pipeline');
 const { isApiKeyConfigured } = require('./aiReport');
 const { isEmailConfigured } = require('./emailSender');
+const { isGoogleConfigured, getServiceAccountEmail, resolveCredentialsPath } = require('./googleAuth');
 const { scrapeCompanyWebsite } = require('./scraper');
 const { generateAuditReport } = require('./aiReport');
 const { generatePdfReport } = require('./pdfGenerator');
@@ -110,6 +111,12 @@ app.get('/api/health', (_req, res) => {
       scraper: true,
       ai: isApiKeyConfigured(),
       email: isEmailConfigured(),
+      google: isGoogleConfigured(),
+    },
+    google: {
+      configured: isGoogleConfigured(),
+      credentialsPath: resolveCredentialsPath(),
+      serviceAccountEmail: getServiceAccountEmail(),
     },
     timestamp: new Date().toISOString(),
   });
@@ -149,6 +156,10 @@ const server = app.listen(PORT, () => {
   log('INIT', 'All pipeline modules loaded');
   log('INIT', `Gemini configured: ${isApiKeyConfigured()}`);
   log('INIT', `Email configured: ${isEmailConfigured()}`);
+  log('INIT', `Google bonus configured: ${isGoogleConfigured()}`);
+  if (getServiceAccountEmail()) {
+    log('INIT', `Service account: ${getServiceAccountEmail()}`);
+  }
   log('SERVER', `Running at http://localhost:${PORT}`);
   log('SERVER', `Pipeline: ${PIPELINE_VERSION}`);
   log('SERVER', `Debug logs: ${process.env.DEBUG_PIPELINE === 'true' ? 'on' : 'off'} (set DEBUG_PIPELINE=true to enable)`);

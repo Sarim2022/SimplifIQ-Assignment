@@ -2,8 +2,11 @@ const { scrapeCompanyWebsite } = require('./scraper');
 const { generateAuditReport } = require('./aiReport');
 const { generatePdfReport } = require('./pdfGenerator');
 const { sendReportEmail } = require('./emailSender');
+const { appendLeadToSheet } = require('./sheetsLogger');
+const { uploadPdfToDrive } = require('./driveArchiver');
+const { isGoogleConfigured } = require('./googleAuth');
 
-const PIPELINE_VERSION = 'phase7-complete-v1';
+const PIPELINE_VERSION = 'phase9-bonus-v1';
 const DEBUG = process.env.DEBUG_PIPELINE === 'true';
 
 function debug(requestId, message, meta) {
@@ -127,6 +130,49 @@ async function runLeadPipeline(lead, requestId) {
 
     const summaryPreview = reportData.sections?.companySummary?.slice(0, 160) || '';
     const workflowComplete = workflow.status === 'complete' || workflow.status === 'partial';
+    const completedAt = new Date().toISOString();
+
+    const bonus = {
+      sheets: { success: false, skipped: true, error: null },
+      drive: { success: false, skipped: true, error: null },
+    };
+
+    if (isGoogleConfigured()) {
+      logStep('SHEETS', requestId, 'started');
+      bonus.sheets = await appendLeadToSheet(lead, {
+        requestId,
+        reportStatus: workflow.status,
+        timestamp: completedAt,
+      });
+      bonus.sheets.skipped = false;
+      workflow.steps.sheets = {
+        state: bonus.sheets.success ? 'completed' : 'failed',
+        success: bonus.sheets.success,
+        error: bonus.sheets.error,
+      };
+      logStep('SHEETS', requestId, 'finished', workflow.steps.sheets);
+
+      if (pdfResult.success && pdfResult.filePath) {
+        logStep('DRIVE', requestId, 'started', { file: pdfResult.fileName });
+        bonus.drive = await uploadPdfToDrive(pdfResult.filePath, pdfResult.fileName);
+        bonus.drive.skipped = false;
+        workflow.steps.drive = {
+          state: bonus.drive.success ? 'completed' : 'failed',
+          success: bonus.drive.success,
+          fileId: bonus.drive.fileId,
+          error: bonus.drive.error,
+        };
+        logStep('DRIVE', requestId, 'finished', workflow.steps.drive);
+      } else {
+        bonus.drive.skipped = true;
+        bonus.drive.error = 'Skipped — no PDF to upload';
+        workflow.steps.drive = { state: 'skipped', success: false, error: bonus.drive.error };
+        logStep('DRIVE', requestId, 'skipped (no PDF)');
+      }
+    } else {
+      logStep('SHEETS', requestId, 'skipped (Google not configured)');
+      logStep('DRIVE', requestId, 'skipped (Google not configured)');
+    }
 
     logStep('PIPELINE', requestId, 'complete', { status: workflow.status });
 
@@ -139,7 +185,7 @@ async function runLeadPipeline(lead, requestId) {
         message: buildUserMessage(lead, workflow),
         requestId,
         startedAt,
-        completedAt: new Date().toISOString(),
+        completedAt,
         lead: {
           name: lead.name,
           email: lead.email,
@@ -170,6 +216,7 @@ async function runLeadPipeline(lead, requestId) {
           messageId: emailResult.messageId,
           error: emailResult.error,
         },
+        bonus,
       },
     };
   } catch (err) {

@@ -105,9 +105,30 @@ reports/           Generated PDFs (gitignored)
 | `npm start` | Run server |
 | `npm run dev` | Run with file watch |
 
-## Bonus (Not Implemented)
+## Bonus — Google Sheets & Drive (Phase 9)
 
-- Google Sheets lead logging
-- Google Drive PDF archiving
+When configured, each lead is:
+1. **Appended to a Google Sheet** (name, email, company, website, timestamp, status, request ID)
+2. **PDF archived** to a shared Google Drive folder
 
-See `workingphase.md` for phase tracker and Phase 9 notes.
+### Setup
+
+1. Create a **service account** in Google Cloud and download the JSON key to `credentials/` (gitignored).
+2. Enable **Google Sheets API** and **Google Drive API** in [Google Cloud Console](https://console.cloud.google.com/apis/library) for your project.
+3. Share your **Google Sheet** with the service account email (Editor).
+4. **Drive upload (important):** Service accounts have **no personal storage quota**. You must either:
+   - **Recommended:** Create a folder inside a **[Shared Drive](https://support.google.com/a/answer/7212025)** (Google Workspace), share that folder with the service account as **Editor**, and use its folder ID as `GOOGLE_DRIVE_FOLDER_ID`.
+   - **Or:** Share a folder in **your** My Drive with the service account as **Editor** (works for many setups; the file uses your quota, not the SA's).
+   - **Or (Workspace):** Enable [domain-wide delegation](https://developers.google.com/identity/protocols/oauth2/service-account#delegatingauthority) and set `GOOGLE_IMPERSONATE_USER=you@company.com` so uploads run as that user.
+5. Add to `.env`:
+   ```env
+   GOOGLE_SHEET_ID=...
+   GOOGLE_DRIVE_FOLDER_ID=...
+   GOOGLE_APPLICATION_CREDENTIALS=./credentials/your-key.json
+   # Optional Workspace delegation:
+   # GOOGLE_IMPERSONATE_USER=you@company.com
+   ```
+6. Add header row to Sheet1 (row 1):  
+   `Name | Email | Company | Website | Timestamp | Report Status | Request ID`
+
+The app uses the full `drive` scope (not `drive.file`) so it can write into folders shared with the service account. It auto-detects the first `.json` in `credentials/` if the env path is wrong.

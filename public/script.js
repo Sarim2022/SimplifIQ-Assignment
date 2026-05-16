@@ -197,6 +197,7 @@ form.addEventListener('submit', async (event) => {
 
     if (localStorage.getItem('DEBUG_PIPELINE') === 'true') {
       console.log('[DEBUG] API response:', result);
+      if (result.bonus) console.log('[DEBUG] Google bonus:', result.bonus);
     }
 
     const ui = buildResultUI(result);
