@@ -1,0 +1,32 @@
+SimplifIQ Assessment — Reflection
+================================
+
+Project Overview
+----------------
+I built an automated lead follow-up system: when someone submits a form with their company details, the app researches their website, generates a personalized business audit, saves it as a PDF, and emails it to them without any manual work in between.
+
+What I Built
+------------
+The core flow runs through a single pipeline: validate the lead, scrape the company website (title, meta description, headings, and about-style content), generate a six-section audit with the Gemini API, render a branded PDF with PDFKit, and send it via Gmail using Nodemailer. PDFs are also stored locally in a reports folder.
+
+I added client-side and server-side validation on the lead form, structured logging for each step, and workflow statuses so partial failures are visible instead of silent. As a bonus, successful runs append a row to Google Sheets (name, email, company, website, timestamp, and report status) using a service account.
+
+Challenges Faced
+----------------
+Integrating several external services in one request was the main challenge. Gemini quota limits and model availability meant I needed a fallback report when the API failed, so the rest of the pipeline could still finish. Website scraping was limited to static HTML—many sites block bots or rely on JavaScript, so enrichment quality varies.
+
+The email and PDF steps had to stay in sync: if PDF generation failed, email should not send with a broken attachment. I also spent time on Google API setup (credentials, sharing the sheet with the service account, and enabling the right APIs). Early on, debugging was harder when an old server process was still running on the same port, which taught me to verify health checks and pipeline versions during testing.
+
+What I Learned
+--------------
+I learned to split the app into small modules (scraper, AI report, PDF, email, sheets) and orchestrate them from one pipeline file instead of putting everything in the Express route. That made each piece easier to test and reason about.
+
+Error handling mattered more than I expected: external calls should return structured results instead of crashing the server, and the user should still get a useful outcome when possible (for example, a fallback audit after a failed scrape). Working with async/await across multiple I/O steps also helped me think about order of operations and what “success” means for the whole workflow versus a single step.
+
+What I Would Improve
+--------------------
+For production, I would move the pipeline to a background job queue so the HTTP request returns quickly and long-running scrape or AI calls do not risk timeouts. Scraping would be stronger with a headless browser (for example Playwright) for JavaScript-heavy sites.
+
+I would add automated tests for validation and pipeline edge cases, rate limiting on the public endpoint, and less debug data in API responses. Storing secrets only in environment variables and rotating keys is already in place, but I would add clearer monitoring and retries for transient SMTP or Gemini errors.
+
+Overall, this project gave me hands-on practice connecting a real user flow to AI, documents, and email—the kind of automation many B2B teams still do manually today.
